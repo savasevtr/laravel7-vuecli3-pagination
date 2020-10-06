@@ -25,7 +25,7 @@
         </div>
         <div class="row">
             <div class="col-lg-12 mx-auto">
-                <Pagination v-if="pagination.last_page > 1" :pagination="pagination" :offset="10" @paginate="fetchPosts()"></Pagination>
+                <Pagination v-if="pagination.last_page > 1" :pagination="pagination" :offset="10" @paginate="getPosts()"></Pagination>
             </div>
         </div>
     </div>
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import { mapActions, mapState } from 'vuex';
 import Pagination from '../pagination/Pagination'
 
 export default {
@@ -41,30 +41,56 @@ export default {
         Pagination
     },
 
-    data() {
-        return {
-            posts: {},
-            pagination: {
-                'current_page': 1
-            }
-        }
+    mounted() {
+        this.getPosts();
+    },
+
+    computed: {
+        ...mapState("post", {
+            posts: "posts",
+            loading: "posts_loading",
+            pagination: "pagination"
+        })
     },
 
     methods: {
-        fetchPosts() {
-            axios.get('http://127.0.0.1:8000/posts?page=' + this.pagination.current_page)
-                .then(response => {
-                    this.posts = response.data.data.data;
-                    this.pagination = response.data.pagination;
-                })
-                .catch(error => {
-                    console.log(error.response.data);
-                });
-        }
-    },
-
-    mounted() {
-        this.fetchPosts();
+        ...mapActions("post", ["getPosts"]),
     }
 }
+
+// import axios from 'axios'
+// import Pagination from '../pagination/Pagination'
+
+// export default {
+//     components: {
+//         Pagination
+//     },
+
+//     data() {
+//         return {
+//             posts: {},
+//             pagination: {
+//                 'current_page': 1
+//             }
+//         }
+//     },
+
+//     methods: {
+//         fetchPosts() {
+//             axios.get('http://127.0.0.1:8000/posts?page=' + this.pagination.current_page)
+//                 .then(response => {
+//                     this.posts = response.data.data.data;
+//                     this.pagination = response.data.pagination;
+//                 })
+//                 .catch(error => {
+//                     console.log(error.response.data);
+//                 });
+//         }
+//     },
+
+//     mounted() {
+//         this.fetchPosts();
+//     }
+// }
+
 </script>
